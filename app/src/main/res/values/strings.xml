@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">IncidentReportingSystem</string>
+    <string name="open_menu">Open Menu</string>
+    <string name="close_menu">Close Menu</string>
+
+    <string name="feedbacktype1">Fire</string>
+    <string name="feedbacktype2">Pollution source</string>
+    <string name="feedbacktype3">Traffic congestion</string>
+    <string name="feedbacktype4">Accident</string>
+
+    <string-array name="feedbacktypelist">
+        <item>@string/feedbacktype1</item>
+        <item>@string/feedbacktype2</item>
+        <item>@string/feedbacktype3</item>
+        <item>@string/feedbacktype4</item>
+    </string-array>
+
+</resources>

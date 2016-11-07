@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/blur"
+        android:scaleType="centerCrop"/>
+
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Please add the incident."
+        android:textSize="24dp"
+        android:textColor="@color/lightGray"
+        android:layout_marginLeft="50dp"/>
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/name"
+        android:hint="Name/E-mail"
+        android:background="@android:color/background_light"
+        android:layout_marginTop="20dp"
+        android:height="30dp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:textSize="24dp"
+        android:textColor="@color/lightGray"
+        android:text="Please select the incident type:"/>
+
+    <Spinner
+        android:id="@+id/incident_type"
+        android:layout_height="wrap_content"
+
+        android:layout_width="fill_parent"
+        android:entries="@array/feedbacktypelist"
+       >
+    </Spinner>
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/description"
+        android:hint="Description"
+        android:background="@android:color/background_light"
+        android:layout_marginTop="20dp"
+        android:lines="5"
+        android:inputType="textMultiLine"
+        />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Add photo"
+        android:layout_marginTop="20dp"
+        />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/submit"
+        android:text="Submit"
+        android:layout_marginTop="20dp"
+
+        />
+</LinearLayout>
+
+</RelativeLayout>
