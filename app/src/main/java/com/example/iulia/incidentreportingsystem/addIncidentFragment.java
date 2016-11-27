@@ -1,16 +1,21 @@
 package com.example.iulia.incidentreportingsystem;
 
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.NotificationCompat;
@@ -39,17 +44,39 @@ import java.net.*;
 
 public class addIncidentFragment extends Fragment implements View.OnClickListener {
 
-    public String description;
-    public String email;
-    public String incidentType;
-    public File incidentImage;
-    public static String filePath;
+    private String description;
+    private String email;
+    private String incidentType;
+    private File incidentImage;
+    private static String filePath;
+
+    private EditText emailHelper;
+    private Spinner incidentTypeHelper;
+    private EditText descriptionHelper;
+
     //pentru coordonate GPS
+    public GetLocation getLocationService; //serviciul care preia locatia
+    boolean mBound = false;
     public Location location;
     public double latitude;
     public double longitude;
 
     private final static int REQUEST_CODE = 10;
+
+    private ServiceConnection mConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+
+            GetLocation.LocationBinder binder = (GetLocation.LocationBinder) service;
+            getLocationService = binder.getService();
+            mBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            mBound = false;
+        }
+    };
 
     @Nullable
     @Override
@@ -59,16 +86,17 @@ public class addIncidentFragment extends Fragment implements View.OnClickListene
         Button submit = (Button) FinalView.findViewById(R.id.submit);
         Button imagePicker = (Button) FinalView.findViewById(R.id.imagePicker);
 
-        EditText emailHelper = (EditText)FinalView.findViewById(R.id.email);
-        email = emailHelper.getText().toString();
-        System.out.println("email "+email);
+        emailHelper = (EditText)FinalView.findViewById(R.id.email);
 
-        EditText descriptionHelper = (EditText)FinalView.findViewById(R.id.description);
-        description = descriptionHelper.getText().toString();
-        System.out.println("description "+description);
+        descriptionHelper = (EditText)FinalView.findViewById(R.id.description);
 
-        Spinner incidentTypeHelper = (Spinner) FinalView.findViewById(R.id.incident_type);
-        incidentType = incidentTypeHelper.getSelectedItem().toString();
+        incidentTypeHelper = (Spinner) FinalView.findViewById(R.id.incident_type);
+
+
+        //preiau locatia curenta de la serviciul GetLocation
+
+        Intent getCoords = new Intent(FinalView.getContext(), GetLocation.class);
+        getActivity().bindService(getCoords, mConnection, Context.BIND_AUTO_CREATE);
 
         //actiuni pe butoane
         submit.setOnClickListener(this);
@@ -79,16 +107,33 @@ public class addIncidentFragment extends Fragment implements View.OnClickListene
     }
 
     @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+    }
+
+    @Override
     public void onClick(View v) {
 
         switch (v.getId()){
 
             case R.id.submit: //daca am apasat submit introducem valorile in baza de date
 
-                //daca am apasat submit, inainte sa trimit totul la baza de date, trebuie sa preiau coordonatele de la GPS
-                //folosesc un serviciu
+                //preiau coordonatele de la serviciu
+                Location coords = getLocationService.getGPSCoords();
+                System.out.println("Latitudine: "+coords.getLatitude()+" Longitudine: "+coords.getLongitude());
+                String lat = String.valueOf(coords.getLatitude());
+                String lng = String.valueOf(coords.getLongitude());
+                //preiau celelalte valori
+                email = emailHelper.getText().toString();
+                System.out.println("email "+email);
+                description = descriptionHelper.getText().toString();
+                System.out.println("description "+description);
+
+                incidentType = incidentTypeHelper.getSelectedItem().toString();
+
+                //trimit la baza de date
                 SendToDb db = new SendToDb();
-                db.execute(email, incidentType, description);
+                db.execute(email, incidentType, description, lat, lng);
                 break;
             case R.id.imagePicker: //daca am apasat upload imagine, pornin Galeria de Imagini folosind Intenturi
                 Intent pickFile = new Intent(Intent.ACTION_PICK);
@@ -142,7 +187,12 @@ public class addIncidentFragment extends Fragment implements View.OnClickListene
             try{
 
                 //utile pentru transmiterea datelor (imagine incidentImage + campuri)
-                String attachedFileName = incidentImage.getName();
+                String attachedFileName = " ";
+                if(incidentImage.getName() != null)
+                {
+                    attachedFileName = incidentImage.getName();
+                }
+
                 String fieldFileName = "incidentImage";
                 String clrf = "\r\n";
                 String twoHyphens = "--";
@@ -169,31 +219,32 @@ public class addIncidentFragment extends Fragment implements View.OnClickListene
                 outputStream = conn.getOutputStream();
                 printWriter = new PrintWriter(new OutputStreamWriter(outputStream, "UTF-8"), true);
 
-                /*TRIMITERE FISIER*/
+                /*TRIMITERE FISIER - DACA EXISTA*/
 
-                //setez content type-ul adecvat
-                printWriter.append(twoHyphens + boundary).append(clrf);
-                printWriter.append("Content-Disposition: form-data; name=\"imagineIncident\";filename=\""+attachedFileName+"\"").append(clrf);
-                printWriter.append("Content-Type: "+URLConnection.guessContentTypeFromName(attachedFileName)).append(clrf);
-                printWriter.append("Content-Transfer-Encoding: binary").append(clrf);
-                printWriter.append(clrf);
-                printWriter.flush();
+                if(addIncidentFragment.filePath!=null) {
+                    //setez content type-ul adecvat
+                    printWriter.append(twoHyphens + boundary).append(clrf);
+                    printWriter.append("Content-Disposition: form-data; name=\"imagineIncident\";filename=\"" + attachedFileName + "\"").append(clrf);
+                    printWriter.append("Content-Type: " + URLConnection.guessContentTypeFromName(attachedFileName)).append(clrf);
+                    printWriter.append("Content-Transfer-Encoding: binary").append(clrf);
+                    printWriter.append(clrf);
+                    printWriter.flush();
 
-                //prelucrari fisier pentru a-l putea trimite
+                    //prelucrari fisier pentru a-l putea trimite
 
-                fileInputStream = new FileInputStream(addIncidentFragment.filePath);
+                    fileInputStream = new FileInputStream(addIncidentFragment.filePath);
 
-                byte[] buffer = new byte[4096];
-                int bRead = -1;
-                while( (bRead = fileInputStream.read(buffer))!=-1 ){
-                    outputStream.write(buffer, 0, bRead);
+                    byte[] buffer = new byte[4096];
+                    int bRead = -1;
+                    while ((bRead = fileInputStream.read(buffer)) != -1) {
+                        outputStream.write(buffer, 0, bRead);
+                    }
+                    outputStream.flush();
+                    fileInputStream.close();
+
+                    printWriter.append(clrf);
+                    printWriter.flush();
                 }
-                outputStream.flush();
-                fileInputStream.close();
-
-                printWriter.append(clrf);
-                printWriter.flush();
-
                 /*TRIMITERE CEILALTI PARAMETRI: email, incidentType, description, lat, lng*/
                 //setez content type-ul adecvat si trimit valoarea
 
@@ -219,6 +270,22 @@ public class addIncidentFragment extends Fragment implements View.OnClickListene
                 printWriter.append("Content-Type: text/plain; charset=UTF-8").append(clrf);
                 printWriter.append(clrf);
                 printWriter.append(params[2]).append(clrf);
+                printWriter.flush();
+
+                //LAT
+                printWriter.append(twoHyphens+boundary).append(clrf);
+                printWriter.append("Content-Disposition: form-data; name=\"lat\"").append(clrf);
+                printWriter.append("Content-Type: text/plain; charset=UTF-8").append(clrf);
+                printWriter.append(clrf);
+                printWriter.append(params[3]).append(clrf);
+                printWriter.flush();
+
+                //LNG
+                printWriter.append(twoHyphens+boundary).append(clrf);
+                printWriter.append("Content-Disposition: form-data; name=\"lng\"").append(clrf);
+                printWriter.append("Content-Type: text/plain; charset=UTF-8").append(clrf);
+                printWriter.append(clrf);
+                printWriter.append(params[4]).append(clrf);
                 printWriter.flush();
 
 
