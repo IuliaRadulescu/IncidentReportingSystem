@@ -194,6 +194,7 @@ public class addIncidentFragment extends Fragment implements View.OnClickListene
                 }
 
                 String fieldFileName = "incidentImage";
+                //utile pentru formarea requestului la server
                 String clrf = "\r\n";
                 String twoHyphens = "--";
                 String boundary =  "*****";
@@ -211,7 +212,6 @@ public class addIncidentFragment extends Fragment implements View.OnClickListene
                 conn.setRequestProperty("Connection", "Keep-Alive");
                 conn.setRequestProperty("Cache-Control", "no-cache");
                 conn.setRequestProperty("Content-Type","multipart/form-data;boundary=" + boundary);
-
 
                 conn.setUseCaches(false);//set true to enable Cache for the req
                 conn.setDoOutput(true);//enable to write data to output stream
