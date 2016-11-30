@@ -31,17 +31,19 @@
             android:layout_height="130dp"
             android:layout_centerInParent="true"
             android:layout_centerHorizontal="true"
-            android:src="@drawable/leaf_logo"/>
+            android:src="@drawable/brad_logo"/>
 
         <TextView
             android:id="@+id/title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textAlignment="center"
             android:hint="Incident Reporting System"
             android:textSize="20dp"
             android:layout_marginTop="25dp"
             android:layout_below="@id/leaf"
-            android:textColor="@color/colorPrimaryDark"
+            android:textColor="@color/colorWhite"
+            android:textColorHint="@color/colorWhite"
             />
 
 
@@ -59,21 +61,22 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="10dp"
-            android:background="@color/colorAccent"
+            android:background="@color/transparentBlack"
             android:textColor="@color/colorPrimaryDark"
-            android:textColorHint="@color/colorPrimaryDark"
+            android:textColorHint="@color/colorWhite"
             android:textAlignment="center"
             android:elegantTextHeight="true"
             android:hint="Map View"/>
         <TextView
             android:id="@+id/addEventLink"
+            android:layout_marginTop="15dp"
             android:textSize="20dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="10dp"
-            android:background="@color/colorPrimaryDark"
-            android:textColor="@color/colorAccent"
-            android:textColorHint="@color/colorAccent"
+            android:background="@color/transparentBlack"
+            android:textColor="@color/colorWhite"
+            android:textColorHint="@color/colorWhite"
             android:textAlignment="center"
             android:elegantTextHeight="true"
             android:hint="Add Event"/>

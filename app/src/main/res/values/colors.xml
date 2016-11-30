@@ -3,6 +3,8 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#71f7ea</color>
     <color name="colorAccent">#303F9F</color>
+    <color name="colorWhite">#FFFFFF</color>
+    <color name="transparentBlack">#80303F9F</color>
     <color name="mapView">#ff8800</color>
     <color name="lightGray">#dee8ff</color>
     <color name="darkGray">#000</color>

@@ -65,6 +65,8 @@
         android:id="@+id/imagePicker"
         android:text="Add photo"
         android:layout_marginTop="20dp"
+        android:background="@color/transparentBlack"
+        android:textColor="@color/colorWhite"
         />
 
     <Button
@@ -72,7 +74,10 @@
         android:layout_height="wrap_content"
         android:id="@+id/submit"
         android:text="Submit"
+        android:background="@color/transparentBlack"
+        android:textColor="@color/colorWhite"
         android:layout_marginTop="20dp"
+
 
         />
 </LinearLayout>
