@@ -11,7 +11,9 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -26,13 +28,13 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mToolbar = (Toolbar)findViewById(R.id.toolbar);
+        //mToolbar = (Toolbar)findViewById(R.id.toolbar);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
 
 
-        String[] menuOptions = new String[]{"Map View", "List View", "Add Event"};
+        String[] menuOptions = new String[]{"Map View", "Add Event"};
         mDrawerCustomAdapter = new DrawerCustomAdapter(this, menuOptions);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.layout_drawer);
         mDrawerListView = (ListView) findViewById(R.id.user_drawer);
@@ -74,6 +76,10 @@ public class MainActivity extends AppCompatActivity {
 
              }
         });
+        Fragment desiredFragment = new InitialScreen();
+        FragmentManager mFragmentManager = getSupportFragmentManager();
+        //aici inlocuiesc layoutul meu cu fragmentul
+        mFragmentManager.beginTransaction().replace(R.id.user_screen, desiredFragment).commit();
 
 
     }
@@ -85,4 +91,6 @@ public class MainActivity extends AppCompatActivity {
         }
         return false;
     }
+
+
 }
